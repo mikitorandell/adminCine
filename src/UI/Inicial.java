@@ -82,6 +82,9 @@ public class Inicial extends javax.swing.JFrame {
         fieldSinopsis = new javax.swing.JTextArea();
         botoCancelarEditarPeli = new javax.swing.JButton();
         botoAceptarEditarPeli = new javax.swing.JButton();
+        jLabel6 = new javax.swing.JLabel();
+        fieldClassificacio = new javax.swing.JComboBox();
+        jLabel7 = new javax.swing.JLabel();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -142,37 +145,54 @@ public class Inicial extends javax.swing.JFrame {
             }
         });
 
+        jLabel6.setText("Classificació ");
+
+        fieldClassificacio.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "TP", "+8", "+12", "+18" }));
+
+        jLabel7.setText("Portada");
+
         org.jdesktop.layout.GroupLayout dialogEditarPeliLayout = new org.jdesktop.layout.GroupLayout(dialogEditarPeli.getContentPane());
         dialogEditarPeli.getContentPane().setLayout(dialogEditarPeliLayout);
         dialogEditarPeliLayout.setHorizontalGroup(
             dialogEditarPeliLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(dialogEditarPeliLayout.createSequentialGroup()
-                .add(16, 16, 16)
                 .add(dialogEditarPeliLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(dialogEditarPeliLayout.createSequentialGroup()
-                        .add(dialogEditarPeliLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
-                            .add(org.jdesktop.layout.GroupLayout.LEADING, jLabel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .add(org.jdesktop.layout.GroupLayout.LEADING, jLabel2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE))
-                        .add(18, 18, 18)
-                        .add(dialogEditarPeliLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(fieldTitol)
-                            .add(fieldDuracio)))
-                    .add(dialogEditarPeliLayout.createSequentialGroup()
-                        .add(jLabel3, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 83, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .add(16, 16, 16)
-                        .add(fieldDirector))
-                    .add(dialogEditarPeliLayout.createSequentialGroup()
-                        .add(dialogEditarPeliLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(jLabel4, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 83, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                            .add(jLabel5, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 83, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                         .add(16, 16, 16)
                         .add(dialogEditarPeliLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(fieldAny)
                             .add(dialogEditarPeliLayout.createSequentialGroup()
-                                .add(botoCancelarEditarPeli, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 188, Short.MAX_VALUE)
+                                .add(jLabel3, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 83, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                .add(16, 16, 16)
+                                .add(fieldDirector))
+                            .add(dialogEditarPeliLayout.createSequentialGroup()
+                                .add(dialogEditarPeliLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
+                                    .add(org.jdesktop.layout.GroupLayout.LEADING, jLabel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .add(org.jdesktop.layout.GroupLayout.LEADING, jLabel2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE))
+                                .add(18, 18, 18)
+                                .add(dialogEditarPeliLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                    .add(fieldDuracio)
+                                    .add(fieldTitol)))))
+                    .add(dialogEditarPeliLayout.createSequentialGroup()
+                        .add(dialogEditarPeliLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(dialogEditarPeliLayout.createSequentialGroup()
+                                .add(16, 16, 16)
+                                .add(jLabel4, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 83, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                            .add(dialogEditarPeliLayout.createSequentialGroup()
+                                .add(14, 14, 14)
+                                .add(dialogEditarPeliLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                                    .add(jLabel5, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 83, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                    .add(dialogEditarPeliLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                        .add(jLabel7, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 83, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                        .add(jLabel6, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 83, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))))
+                        .add(16, 16, 16)
+                        .add(dialogEditarPeliLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(dialogEditarPeliLayout.createSequentialGroup()
+                                .add(botoCancelarEditarPeli, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 208, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(botoAceptarEditarPeli, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 191, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                            .add(org.jdesktop.layout.GroupLayout.TRAILING, jScrollPane2))))
+                                .add(botoAceptarEditarPeli, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 227, Short.MAX_VALUE))
+                            .add(fieldAny)
+                            .add(jScrollPane2)
+                            .add(org.jdesktop.layout.GroupLayout.TRAILING, fieldClassificacio, 0, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         dialogEditarPeliLayout.setVerticalGroup(
@@ -195,13 +215,22 @@ public class Inicial extends javax.swing.JFrame {
                     .add(jLabel4)
                     .add(fieldAny, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(dialogEditarPeliLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(jLabel6)
+                    .add(fieldClassificacio, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .add(dialogEditarPeliLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(jLabel5)
-                    .add(jScrollPane2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                    .add(dialogEditarPeliLayout.createSequentialGroup()
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(jScrollPane2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 115, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                    .add(dialogEditarPeliLayout.createSequentialGroup()
+                        .add(17, 17, 17)
+                        .add(jLabel5)))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .add(jLabel7)
                 .add(18, 18, 18)
-                .add(dialogEditarPeliLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(botoCancelarEditarPeli, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 109, Short.MAX_VALUE)
-                    .add(botoAceptarEditarPeli))
+                .add(dialogEditarPeliLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(botoCancelarEditarPeli)
+                    .add(botoAceptarEditarPeli, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
@@ -281,9 +310,8 @@ public class Inicial extends javax.swing.JFrame {
         this.fieldDuracio.setText(this.pelicules.get(this.tablePelicules.getSelectedRow()).getDuracio() + "");
         this.fieldSinopsis.setText(this.pelicules.get(this.tablePelicules.getSelectedRow()).getSinopsis());
         this.fieldTitol.setText(this.pelicules.get(this.tablePelicules.getSelectedRow()).getTitol());
-        
+        this.fieldClassificacio.setSelectedItem(this.pelicules.get(this.tablePelicules.getSelectedRow()).getClassificacio());
         //asignar la pel·lícula a una variable d'instància per editar-la
-        
         this.pEditar=this.pelicules.get(this.tablePelicules.getSelectedRow());
         
         this.dialogEditarPeli.setSize(650, 410);
@@ -292,33 +320,36 @@ public class Inicial extends javax.swing.JFrame {
         System.out.println("volen editar la peli:" + this.pelicules.get(this.tablePelicules.getSelectedRow()).getTitol());// TODO add your handling code here:
     }//GEN-LAST:event_botoEditarPeli
     
-    private void fieldAnyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fieldAnyActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_fieldAnyActionPerformed
+    
+    public void guardarEdicio(java.awt.event.MouseEvent evt){
+        //TODO: cambiar el parseInt per validació real
+        this.pEditar.setAny(Integer.parseInt(this.fieldAny.getText()));
+        this.pEditar.setClassificacio((String)this.fieldClassificacio.getSelectedItem());
+        this.pEditar.setDirector(this.fieldDirector.getText());
+        this.pEditar.setDuracio(Integer.parseInt(this.fieldDuracio.getText()));
+        this.pEditar.setSinopsis(this.fieldSinopsis.getText());
+        this.pEditar.setTitol(this.fieldTitol.getText());
+        //TODO: ASSIGNAR ELS GÈNERES
+        rbd.actualitzarPelicula(this.pEditar);
+        this.mostrarAlert("Pel·lìcula guardada correctament");
+        this.dialogEditarPeli.dispose();
+        this.omplirPelicules();
+        this.pEditar=null;
+    }
+//GEN-FIRST:event_guardarEdicio
+ 
+//GEN-LAST:event_guardarEdicio
 
     private void cancelarEdicio(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cancelarEdicio
         this.dialogEditarPeli.dispose();
         this.dialogEditarPeli.setVisible(false);
     }//GEN-LAST:event_cancelarEdicio
 
-    private void guardarEdicio(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_guardarEdicio
-        //TODO: millorar aixó per assegurar que fiquen un any vàlid
-        this.pEditar.setAny(Integer.parseInt(this.fieldAny.getText()));
-        //TODO: posar el camp de classificació
-        //this.pEditar.setClassificacio(this.field);
-        this.pEditar.setDirector(this.fieldDirector.getText());
-        this.pEditar.setDuracio(Integer.parseInt(this.fieldDuracio.getText()));
-        //TODO: assignar els gèneres
-        //this.pEditar.setGeneres(null);
-        this.pEditar.setSinopsis(this.fieldSinopsis.getText());
-        this.pEditar.setTitol(this.fieldTitol.getText());
-        rbd.actualitzarPelicula(this.pEditar);
-        
-        this.mostrarAlert("Pel·lícula actualitzada correctament");
-        this.dialogEditarPeli.dispose();
-        this.omplirPelicules();
-    }//GEN-LAST:event_guardarEdicio
+    private void fieldAnyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fieldAnyActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_fieldAnyActionPerformed
 
+   
     /**
      * @param args the command line arguments
      */
@@ -360,6 +391,7 @@ public class Inicial extends javax.swing.JFrame {
     private javax.swing.JMenuItem botoEditarPeli;
     private javax.swing.JDialog dialogEditarPeli;
     private javax.swing.JTextField fieldAny;
+    private javax.swing.JComboBox fieldClassificacio;
     private javax.swing.JTextField fieldDirector;
     private javax.swing.JTextField fieldDuracio;
     private javax.swing.JTextArea fieldSinopsis;
@@ -370,6 +402,8 @@ public class Inicial extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
