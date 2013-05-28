@@ -4,6 +4,7 @@
  */
 package admincine;
 
+import entitats.Pelicula;
 import java.util.ArrayList;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
@@ -14,7 +15,30 @@ import org.hibernate.Session;
  * @author torandell9
  */
 public class recursosBD {
-     Session session;
+
+    Session session;
+
+    public recursosBD() {
+        this.session = NewHibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+    }
+
+    public ArrayList<Pelicula> getPelicules() {
+        return (ArrayList<Pelicula>) this.getSelect("from Pelicula");
+    }
+
+    public void borrarPelicula(Pelicula p) {
+        session.delete(p);
+        session.getTransaction().commit(); //tanca la sessió perque fagi el commit. 
+        session.beginTransaction();
+    }
+
+    public void actualitzarPelicula(Pelicula p) {
+        session.update(p);
+        session.getTransaction().commit(); //tanca la sessió perque fagi el commit. 
+        session.beginTransaction();//reinicia sessió
+    }
+
     /**
      * Métode generic al que se l'hi passa la sentencia HQL i retorna un
      * ArrayList dels resultats
