@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 28-may-2013 11:38:33 by Hibernate Tools 3.2.1.GA -->
+<hibernate-mapping>
+    <class name="entitats.Pelicula" table="pelicula" catalog="mitobo_cinema">
+        <id name="id" type="java.lang.Integer">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <property name="titol" type="string">
+            <column name="titol" length="70" not-null="true" />
+        </property>
+        <property name="sinopsis" type="string">
+            <column name="sinopsis" not-null="true" />
+        </property>
+        <property name="duracio" type="int">
+            <column name="duracio" not-null="true" />
+        </property>
+        <property name="director" type="string">
+            <column name="director" length="200" not-null="true" />
+        </property>
+        <property name="any" type="int">
+            <column name="any" not-null="true" />
+        </property>
+        <property name="rutaImatge" type="string">
+            <column name="ruta_imatge" length="400" not-null="true" />
+        </property>
+        <property name="tresd" type="java.lang.Boolean">
+            <column name="tresd" />
+        </property>
+        <property name="classificacio" type="string">
+            <column name="classificacio" length="3" />
+        </property>
+        <set name="generes" inverse="false" table="pelicules_has_generos">
+            <key>
+                <column name="pelicules_id" not-null="true" />
+            </key>
+            <many-to-many entity-name="entitats.Genere">
+                <column name="generos_id" not-null="true" />
+            </many-to-many>
+        </set>
+        <set name="pases" inverse="true">
+            <key>
+                <column name="id_pelicula" not-null="true" />
+            </key>
+            <one-to-many class="entitats.Pase" />
+        </set>
+    </class>
+</hibernate-mapping>
