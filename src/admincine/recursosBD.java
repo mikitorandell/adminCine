@@ -4,6 +4,7 @@
  */
 package admincine;
 
+import entitats.Genere;
 import entitats.Pelicula;
 import java.util.ArrayList;
 import org.hibernate.HibernateException;
@@ -44,6 +45,11 @@ public class recursosBD {
         session.save(p);
           session.getTransaction().commit(); //tanca la sessió perque fagi el commit. 
         session.beginTransaction();//reinicia sessió
+    }
+    
+    
+    public ArrayList<Genere> getGeneres(){
+        return this.getSelect("from Genere");
     }
     /**
      * Métode generic al que se l'hi passa la sentencia HQL i retorna un
