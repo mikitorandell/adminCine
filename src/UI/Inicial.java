@@ -7,8 +7,14 @@ package UI;
 import javax.swing.table.DefaultTableModel;
 import admincine.recursosBD;
 import entitats.Pelicula;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import org.apache.commons.net.ftp.FTPClient;
 
 /**
  *
@@ -16,8 +22,26 @@ import javax.swing.JOptionPane;
  */
 public class Inicial extends javax.swing.JFrame {
     //TODO: posar un botó per crear una nova pel·lícula aprofitant el dialog que ja hi ha
+
     recursosBD rbd = new recursosBD();
     Pelicula pEditar;
+    boolean afegirPeli = false;
+    javax.swing.filechooser.FileFilter filter = new javax.swing.filechooser.FileFilter() {
+        @Override
+        public boolean accept(File file) {
+            if (file.isDirectory()) {
+                return true;
+            } else {
+                return (file.getName().endsWith(".jpg") || file.getName().endsWith(".jpeg") || file.getName().endsWith(".JPG") || file.getName().endsWith(".JPEG"));
+
+            }
+        }
+
+        @Override
+        public String getDescription() {
+            return "Arxius d'imatge (.JPG i .JPEG)";
+        }
+    };
     /**
      * *** PANEL PELICULES **
      */
@@ -28,19 +52,19 @@ public class Inicial extends javax.swing.JFrame {
             return false;
         }
     };
-    
+
     public Inicial() {
         initComponents();
         this.omplirPelicules();
     }
-    
+
     private void mostrarAlert(String missatge) {
         JOptionPane.showMessageDialog(null, missatge);
     }
-    
+
     public void omplirPelicules() {
         this.modelPelicules.setRowCount(0);
-        
+
         this.pelicules = rbd.getPelicules();
         for (Pelicula p : this.pelicules) {
             System.out.println(p.getTitol());
@@ -50,9 +74,9 @@ public class Inicial extends javax.swing.JFrame {
                         p.getDuracio(),
                         p.getAny(),});
         }
-        
+
         this.tablePelicules.setModel(this.modelPelicules);
-        
+
     }
 
     /**
@@ -64,7 +88,7 @@ public class Inicial extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jFileChooser1 = new javax.swing.JFileChooser();
+        SeleccionarArxiu = new javax.swing.JFileChooser();
         popUpPelicules = new javax.swing.JPopupMenu();
         botoEditarPeli = new javax.swing.JMenuItem();
         botoBorrarPeli = new javax.swing.JMenuItem();
@@ -85,10 +109,13 @@ public class Inicial extends javax.swing.JFrame {
         jLabel6 = new javax.swing.JLabel();
         fieldClassificacio = new javax.swing.JComboBox();
         jLabel7 = new javax.swing.JLabel();
+        botoSeleccionarPortada = new javax.swing.JButton();
+        rutaArxiu = new javax.swing.JLabel();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tablePelicules = new javax.swing.JTable();
+        botoAfegirPeli = new javax.swing.JButton();
 
         botoEditarPeli.setText("Editar pel·lícula");
         botoEditarPeli.addActionListener(new java.awt.event.ActionListener() {
@@ -99,11 +126,6 @@ public class Inicial extends javax.swing.JFrame {
         popUpPelicules.add(botoEditarPeli);
 
         botoBorrarPeli.setText("Borrar pel·lícula");
-        botoBorrarPeli.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                botoBorrarPeliMouseClicked(evt);
-            }
-        });
         botoBorrarPeli.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 botoBorrarPeliActionPerformed(evt);
@@ -151,6 +173,13 @@ public class Inicial extends javax.swing.JFrame {
 
         jLabel7.setText("Portada");
 
+        botoSeleccionarPortada.setText("Seleccionar imagen");
+        botoSeleccionarPortada.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                botoSeleccionarPortadaMouseClicked(evt);
+            }
+        });
+
         org.jdesktop.layout.GroupLayout dialogEditarPeliLayout = new org.jdesktop.layout.GroupLayout(dialogEditarPeli.getContentPane());
         dialogEditarPeli.getContentPane().setLayout(dialogEditarPeliLayout);
         dialogEditarPeliLayout.setHorizontalGroup(
@@ -169,37 +198,36 @@ public class Inicial extends javax.swing.JFrame {
                             .add(dialogEditarPeliLayout.createSequentialGroup()
                                 .add(16, 16, 16)
                                 .add(jLabel4, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 61, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
+                        .add(55, 55, 55)
                         .add(dialogEditarPeliLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(dialogEditarPeliLayout.createSequentialGroup()
+                                .add(botoCancelarEditarPeli, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 237, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(botoCancelarEditarPeli, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 208, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(botoAceptarEditarPeli, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 314, Short.MAX_VALUE))
+                                .add(botoAceptarEditarPeli))
+                            .add(org.jdesktop.layout.GroupLayout.TRAILING, jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 485, Short.MAX_VALUE)
+                            .add(org.jdesktop.layout.GroupLayout.TRAILING, fieldClassificacio, 0, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .add(fieldAny)
+                            .add(fieldTitol)
+                            .add(fieldDirector)
+                            .add(fieldDuracio)
                             .add(dialogEditarPeliLayout.createSequentialGroup()
-                                .add(55, 55, 55)
-                                .add(dialogEditarPeliLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                                    .add(org.jdesktop.layout.GroupLayout.TRAILING, jScrollPane2)
-                                    .add(org.jdesktop.layout.GroupLayout.TRAILING, fieldClassificacio, 0, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .add(fieldAny)
-                                    .add(fieldTitol)
-                                    .add(fieldDirector)
-                                    .add(fieldDuracio)))))
+                                .add(botoSeleccionarPortada, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 200, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                .add(18, 18, 18)
+                                .add(rutaArxiu, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                     .add(dialogEditarPeliLayout.createSequentialGroup()
                         .add(16, 16, 16)
                         .add(dialogEditarPeliLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(dialogEditarPeliLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
                                 .add(jLabel3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 83, Short.MAX_VALUE)
                                 .add(jLabel2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .add(dialogEditarPeliLayout.createSequentialGroup()
-                                .add(jLabel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .add(0, 0, 0)))
+                            .add(jLabel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .add(278, 278, 278)))
                 .addContainerGap())
         );
         dialogEditarPeliLayout.setVerticalGroup(
             dialogEditarPeliLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(dialogEditarPeliLayout.createSequentialGroup()
-                .add(30, 30, 30)
+                .add(16, 16, 16)
                 .add(dialogEditarPeliLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(jLabel1)
                     .add(fieldTitol, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
@@ -226,9 +254,12 @@ public class Inicial extends javax.swing.JFrame {
                     .add(dialogEditarPeliLayout.createSequentialGroup()
                         .add(17, 17, 17)
                         .add(jLabel5)))
-                .add(18, 28, Short.MAX_VALUE)
-                .add(jLabel7)
                 .add(18, 18, 18)
+                .add(dialogEditarPeliLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(botoSeleccionarPortada)
+                    .add(jLabel7)
+                    .add(rutaArxiu, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 29, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 86, Short.MAX_VALUE)
                 .add(dialogEditarPeliLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(botoCancelarEditarPeli)
                     .add(botoAceptarEditarPeli, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
@@ -253,21 +284,33 @@ public class Inicial extends javax.swing.JFrame {
         tablePelicules.setComponentPopupMenu(popUpPelicules);
         jScrollPane1.setViewportView(tablePelicules);
 
+        botoAfegirPeli.setText("Afegir pel·lícula");
+        botoAfegirPeli.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                botoAfegirPeliMouseClicked(evt);
+            }
+        });
+
         org.jdesktop.layout.GroupLayout jPanel2Layout = new org.jdesktop.layout.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 986, Short.MAX_VALUE)
+                .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(org.jdesktop.layout.GroupLayout.TRAILING, jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 986, Short.MAX_VALUE)
+                    .add(jPanel2Layout.createSequentialGroup()
+                        .add(botoAfegirPeli, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 406, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                        .add(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 424, Short.MAX_VALUE)
-                .add(21, 21, 21))
+                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 410, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(botoAfegirPeli))
         );
 
         jTabbedPane1.addTab("Pel·lícules", jPanel2);
@@ -292,29 +335,24 @@ public class Inicial extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void botoBorrarPeliMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botoBorrarPeliMouseClicked
-        // TODO: no serveix, BORRAR
-        System.out.println("hola");
-        System.out.println("volen borrar la peli" + this.pelicules.get(this.tablePelicules.getSelectedRow()).getTitol());
-    }//GEN-LAST:event_botoBorrarPeliMouseClicked
-    
     private void botoBorrarPeliActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botoBorrarPeliActionPerformed
         rbd.borrarPelicula(this.pelicules.get(this.tablePelicules.getSelectedRow()));
         this.omplirPelicules();
         this.mostrarAlert("Pel·lícula borrada satisfactoriament");
     }//GEN-LAST:event_botoBorrarPeliActionPerformed
-    
+
     private void botoEditarPeli(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botoEditarPeli
         //OMPLIR ELS CAMPS
-        this.fieldAny.setText(this.pelicules.get(this.tablePelicules.getSelectedRow()).getAny()+"");
+        this.afegirPeli = false;
+        this.fieldAny.setText(this.pelicules.get(this.tablePelicules.getSelectedRow()).getAny() + "");
         this.fieldDirector.setText(this.pelicules.get(this.tablePelicules.getSelectedRow()).getDirector());
         this.fieldDuracio.setText(this.pelicules.get(this.tablePelicules.getSelectedRow()).getDuracio() + "");
         this.fieldSinopsis.setText(this.pelicules.get(this.tablePelicules.getSelectedRow()).getSinopsis());
         this.fieldTitol.setText(this.pelicules.get(this.tablePelicules.getSelectedRow()).getTitol());
         this.fieldClassificacio.setSelectedItem(this.pelicules.get(this.tablePelicules.getSelectedRow()).getClassificacio());
         //asignar la pel·lícula a una variable d'instància per editar-la
-        this.pEditar=this.pelicules.get(this.tablePelicules.getSelectedRow());
-        
+        this.pEditar = this.pelicules.get(this.tablePelicules.getSelectedRow());
+        this.rutaArxiu.setText(this.pelicules.get(this.tablePelicules.getSelectedRow()).getRutaImatge());
         this.dialogEditarPeli.setSize(680, 450);
         this.dialogEditarPeli.setLocationRelativeTo(null);
         this.dialogEditarPeli.setVisible(true);
@@ -334,25 +372,99 @@ public class Inicial extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_fieldAnyActionPerformed
 
-    public void guardarEdicio(java.awt.event.MouseEvent evt){
+    private void botoSeleccionarPortadaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botoSeleccionarPortadaMouseClicked
+        System.out.println("mostrar el selector d'arxiu");
+        this.SeleccionarArxiu.setFileFilter(this.filter);
+        int resultat = this.SeleccionarArxiu.showOpenDialog(null);
+        if (resultat == JFileChooser.APPROVE_OPTION) {
+            File portada = this.SeleccionarArxiu.getSelectedFile();
+            this.rutaArxiu.setText(portada.getAbsolutePath());
+        }
+    }//GEN-LAST:event_botoSeleccionarPortadaMouseClicked
+
+    private void botoAfegirPeliMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botoAfegirPeliMouseClicked
+        //TODO: el formulari surt ple si ja han editat una peli antes 
+        
+        this.afegirPeli = true;
+        //BUIDAM ELS CAMPS
+        this.fieldAny.setText("");
+        this.fieldDirector.setText("");
+        this.fieldDuracio.setText("");
+        this.fieldSinopsis.setText("");
+        this.fieldTitol.setText("");
+        this.fieldClassificacio.setSelectedIndex(0);
+        //asignar la pel·lícula a una variable d'instància per editar-la
+        this.rutaArxiu.setText("");
+        this.pEditar= new Pelicula();
+        this.dialogEditarPeli.setSize(680, 450);
+        this.dialogEditarPeli.setLocationRelativeTo(null);
+        this.dialogEditarPeli.setVisible(true);
+    }//GEN-LAST:event_botoAfegirPeliMouseClicked
+
+    public void guardarEdicio(java.awt.event.MouseEvent evt) {
         //TODO: cambiar el parseInt per validació real
         this.pEditar.setAny(Integer.parseInt(this.fieldAny.getText()));
-        this.pEditar.setClassificacio((String)this.fieldClassificacio.getSelectedItem());
+        this.pEditar.setClassificacio((String) this.fieldClassificacio.getSelectedItem());
         this.pEditar.setDirector(this.fieldDirector.getText());
         this.pEditar.setDuracio(Integer.parseInt(this.fieldDuracio.getText()));
         this.pEditar.setSinopsis(this.fieldSinopsis.getText());
         this.pEditar.setTitol(this.fieldTitol.getText());
         //TODO: ASSIGNAR ELS GÈNERES
-        //TODO: com posar la imatge?
-        rbd.actualitzarPelicula(this.pEditar);
+        
+        //IMATGE
+        if (this.rutaArxiu.getText() != this.pEditar.getRutaImatge()) {
+            this.guardarImatgeFTP(this.rutaArxiu.getText());
+            this.pEditar.setRutaImatge(new File(this.rutaArxiu.getText()).getName());
+        }
+        //TODO: SEGONS AIXÓ, GUARDA O ACTUALITZA
+        if (!this.afegirPeli) {
+            rbd.actualitzarPelicula(this.pEditar);
+        } else {
+            rbd.guardarPelicula(this.pEditar);
+        }
         this.mostrarAlert("Pel·lìcula guardada correctament");
         this.dialogEditarPeli.dispose();
         this.omplirPelicules();
-        this.pEditar=null;
+        this.pEditar = null;
+
+
     }
 
-    
-   
+    /**
+     * Guarda l'imatge dins l'FTP
+     * @param imatge 
+     */
+    public void guardarImatgeFTP(String imatge) {
+
+        FTPClient client = new FTPClient();
+        //TODO: fer que ho fiqui al ftp que toca
+        String sFTP = "port-au-prince.dreamhost.com";
+        String sUser = "cartasmodelos";
+        String sPassword = "motherfucker";
+        FileInputStream fis;
+        try {
+            client.connect(sFTP);
+            boolean login = client.login(sUser, sPassword);
+
+            if (login) {
+                System.out.println("ficam l'imatge dins l'ftp");
+                File f = new File(imatge);
+
+                fis = new FileInputStream(imatge);
+                //TODO: fer que ho fiqui a la carpeta que toca
+                client.storeFile(f.getName(), fis);
+
+                fis.close();
+                client.logout();
+                System.out.println("arxiu pujat");
+            } else {
+                System.out.println("no s'ha conectat");
+            }
+        } catch (Exception ioe) {
+            ioe.printStackTrace();
+        }
+    }
+
     /**
      * @param args the command line arguments
      */
@@ -388,10 +500,13 @@ public class Inicial extends javax.swing.JFrame {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JFileChooser SeleccionarArxiu;
     private javax.swing.JButton botoAceptarEditarPeli;
+    private javax.swing.JButton botoAfegirPeli;
     private javax.swing.JMenuItem botoBorrarPeli;
     private javax.swing.JButton botoCancelarEditarPeli;
     private javax.swing.JMenuItem botoEditarPeli;
+    private javax.swing.JButton botoSeleccionarPortada;
     private javax.swing.JDialog dialogEditarPeli;
     private javax.swing.JTextField fieldAny;
     private javax.swing.JComboBox fieldClassificacio;
@@ -399,7 +514,6 @@ public class Inicial extends javax.swing.JFrame {
     private javax.swing.JTextField fieldDuracio;
     private javax.swing.JTextArea fieldSinopsis;
     private javax.swing.JTextField fieldTitol;
-    private javax.swing.JFileChooser jFileChooser1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -412,6 +526,7 @@ public class Inicial extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JPopupMenu popUpPelicules;
+    private javax.swing.JLabel rutaArxiu;
     private javax.swing.JTable tablePelicules;
     // End of variables declaration//GEN-END:variables
 }

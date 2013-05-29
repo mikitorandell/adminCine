@@ -38,7 +38,13 @@ public class recursosBD {
         session.getTransaction().commit(); //tanca la sessió perque fagi el commit. 
         session.beginTransaction();//reinicia sessió
     }
-
+    
+    public void guardarPelicula(Pelicula p)
+    {
+        session.save(p);
+          session.getTransaction().commit(); //tanca la sessió perque fagi el commit. 
+        session.beginTransaction();//reinicia sessió
+    }
     /**
      * Métode generic al que se l'hi passa la sentencia HQL i retorna un
      * ArrayList dels resultats
