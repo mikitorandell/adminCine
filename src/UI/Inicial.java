@@ -6,7 +6,9 @@ package UI;
 
 import admincine.recursosBD;
 import entitats.Genere;
+import entitats.Pase;
 import entitats.Pelicula;
+import entitats.Sala;
 import java.awt.Checkbox;
 import java.awt.CheckboxGroup;
 import java.awt.Color;
@@ -15,9 +17,12 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
 import java.io.FileInputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -28,8 +33,8 @@ import org.apache.commons.net.ftp.FTPClient;
  * @author torandell9
  */
 public class Inicial extends javax.swing.JFrame implements ItemListener {
-    //TODO: posar un botó per crear una nova pel·lícula aprofitant el dialog que ja hi ha
 
+    // TODO: posar l'opció de borrar pase, pero només si no hi ha cap reserva feta!
     recursosBD rbd = new recursosBD();
     Pelicula pEditar;
     boolean afegirPeli = false;
@@ -61,10 +66,22 @@ public class Inicial extends javax.swing.JFrame implements ItemListener {
             return false;
         }
     };
+    /**
+     * PANEL PASES
+     */
+    private ArrayList<Sala> sales;
+    ArrayList<Pase> pases;
+    DefaultTableModel modelPases = new DefaultTableModel(new Object[][]{}, new String[]{"Pel·lícula", "Día", "Hora", "Sala"}) {
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return false;
+        }
+    };
 
     public Inicial() {
         initComponents();
         this.omplirPelicules();
+
     }
 
     private void mostrarAlert(String missatge) {
@@ -73,10 +90,11 @@ public class Inicial extends javax.swing.JFrame implements ItemListener {
 
     public void omplirPelicules() {
         this.modelPelicules.setRowCount(0);
+        this.llistaPelicules.removeAllItems();//borra les pel·lícules que hi pugui haver dins el ComboBox
 
         this.pelicules = rbd.getPelicules();
         for (Pelicula p : this.pelicules) {
-            System.out.println(p.getTitol());
+            this.llistaPelicules.addItem(p.getTitol());//S'AFEGEIX AL DESPLEGABLE DE SELECCIÓ DE PEL·LÍCULA PER QUAN CREEN PASES
             this.modelPelicules.addRow(new Object[]{
                         p.getTitol(),
                         p.getDirector(),
@@ -123,11 +141,29 @@ public class Inicial extends javax.swing.JFrame implements ItemListener {
         jLabel8 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
         dialogGeneres = new javax.swing.JDialog();
+        dialogPase = new javax.swing.JDialog();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        selectorCalendari = new org.jdesktop.swingx.JXDatePicker();
+        jButton3 = new javax.swing.JButton();
+        jButton4 = new javax.swing.JButton();
+        jLabel11 = new javax.swing.JLabel();
+        llistaPelicules = new javax.swing.JComboBox();
+        horaPase = new javax.swing.JComboBox();
+        jLabel12 = new javax.swing.JLabel();
+        minutPase = new javax.swing.JComboBox();
+        jLabel13 = new javax.swing.JLabel();
+        comboSales = new javax.swing.JComboBox();
         jTabbedPane1 = new javax.swing.JTabbedPane();
-        jPanel2 = new javax.swing.JPanel();
+        panelPelicules = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tablePelicules = new javax.swing.JTable();
         botoAfegirPeli = new javax.swing.JButton();
+        panelPases = new javax.swing.JPanel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        tablePases = new javax.swing.JTable();
+        jButton2 = new javax.swing.JButton();
+        jPanel1 = new javax.swing.JPanel();
 
         botoEditarPeli.setText("Editar pel·lícula");
         botoEditarPeli.addActionListener(new java.awt.event.ActionListener() {
@@ -296,6 +332,111 @@ public class Inicial extends javax.swing.JFrame implements ItemListener {
 
         dialogGeneres.getContentPane().setLayout(new java.awt.FlowLayout());
 
+        dialogPase.addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                carregaDialogPase(evt);
+            }
+        });
+
+        jLabel9.setText("Día:");
+
+        jLabel10.setText("Hora: ");
+
+        jButton3.setText("Cancelar");
+        jButton3.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tancarDialogPases(evt);
+            }
+        });
+
+        jButton4.setText("<html><b>Aceptar</b></html>");
+        jButton4.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                guardarPase(evt);
+            }
+        });
+
+        jLabel11.setText("Pel·lícula:");
+
+        llistaPelicules.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        horaPase.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23" }));
+
+        jLabel12.setText(":");
+
+        minutPase.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52", "53", "54", "55", "56", "57", "58", "59" }));
+        minutPase.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                minutPaseActionPerformed(evt);
+            }
+        });
+
+        jLabel13.setText("Sala:");
+
+        org.jdesktop.layout.GroupLayout dialogPaseLayout = new org.jdesktop.layout.GroupLayout(dialogPase.getContentPane());
+        dialogPase.getContentPane().setLayout(dialogPaseLayout);
+        dialogPaseLayout.setHorizontalGroup(
+            dialogPaseLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(dialogPaseLayout.createSequentialGroup()
+                .addContainerGap()
+                .add(dialogPaseLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(dialogPaseLayout.createSequentialGroup()
+                        .add(0, 0, Short.MAX_VALUE)
+                        .add(dialogPaseLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
+                            .add(jLabel10, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .add(jLabel9, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .add(32, 32, 32)
+                        .add(dialogPaseLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                            .add(dialogPaseLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                .add(selectorCalendari, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 359, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                .add(dialogPaseLayout.createSequentialGroup()
+                                    .add(jButton3, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 177, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                    .add(jButton4, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 176, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
+                            .add(dialogPaseLayout.createSequentialGroup()
+                                .add(horaPase, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 93, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                .add(18, 18, 18)
+                                .add(jLabel12)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(minutPase, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 104, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))))
+                    .add(dialogPaseLayout.createSequentialGroup()
+                        .add(dialogPaseLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(jLabel11)
+                            .add(jLabel13))
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+                        .add(dialogPaseLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(llistaPelicules, 0, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .add(comboSales, 0, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                .addContainerGap())
+        );
+        dialogPaseLayout.setVerticalGroup(
+            dialogPaseLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(dialogPaseLayout.createSequentialGroup()
+                .add(15, 15, 15)
+                .add(dialogPaseLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(jLabel9)
+                    .add(selectorCalendari, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+                .add(dialogPaseLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(jLabel10)
+                    .add(horaPase, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(jLabel12)
+                    .add(minutPase, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+                .add(dialogPaseLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(jLabel11)
+                    .add(llistaPelicules, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(dialogPaseLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(comboSales, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(jLabel13))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 12, Short.MAX_VALUE)
+                .add(dialogPaseLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(jButton3)
+                    .add(jButton4, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
+        );
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jTabbedPane1.setMinimumSize(new java.awt.Dimension(900, 21));
@@ -321,27 +462,88 @@ public class Inicial extends javax.swing.JFrame implements ItemListener {
             }
         });
 
-        org.jdesktop.layout.GroupLayout jPanel2Layout = new org.jdesktop.layout.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jPanel2Layout.createSequentialGroup()
+        org.jdesktop.layout.GroupLayout panelPeliculesLayout = new org.jdesktop.layout.GroupLayout(panelPelicules);
+        panelPelicules.setLayout(panelPeliculesLayout);
+        panelPeliculesLayout.setHorizontalGroup(
+            panelPeliculesLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(panelPeliculesLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                .add(panelPeliculesLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 986, Short.MAX_VALUE)
                     .add(botoAfegirPeli, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jPanel2Layout.createSequentialGroup()
+        panelPeliculesLayout.setVerticalGroup(
+            panelPeliculesLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(panelPeliculesLayout.createSequentialGroup()
                 .addContainerGap()
                 .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 410, Short.MAX_VALUE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(botoAfegirPeli))
         );
 
-        jTabbedPane1.addTab("Pel·lícules", jPanel2);
+        jTabbedPane1.addTab("Pel·lícules", panelPelicules);
+
+        panelPases.addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentShown(java.awt.event.ComponentEvent evt) {
+                carregaPases(evt);
+            }
+        });
+
+        tablePases.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane3.setViewportView(tablePases);
+
+        jButton2.setText("Afegir Pase");
+        jButton2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                mostrarDialogAfegirPase(evt);
+            }
+        });
+
+        org.jdesktop.layout.GroupLayout panelPasesLayout = new org.jdesktop.layout.GroupLayout(panelPases);
+        panelPases.setLayout(panelPasesLayout);
+        panelPasesLayout.setHorizontalGroup(
+            panelPasesLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(panelPasesLayout.createSequentialGroup()
+                .addContainerGap()
+                .add(panelPasesLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(jButton2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 986, Short.MAX_VALUE)
+                    .add(jScrollPane3))
+                .addContainerGap())
+        );
+        panelPasesLayout.setVerticalGroup(
+            panelPasesLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(panelPasesLayout.createSequentialGroup()
+                .addContainerGap()
+                .add(jScrollPane3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 410, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(jButton2))
+        );
+
+        jTabbedPane1.addTab("Pases", panelPases);
+
+        org.jdesktop.layout.GroupLayout jPanel1Layout = new org.jdesktop.layout.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(0, 998, Short.MAX_VALUE)
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(0, 451, Short.MAX_VALUE)
+        );
+
+        jTabbedPane1.addTab("Estadístiques", jPanel1);
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -451,18 +653,106 @@ public class Inicial extends javax.swing.JFrame implements ItemListener {
         this.dialogGeneres.setLocationRelativeTo(null);
     }//GEN-LAST:event_mostrarPopupGeneres
 
+    /**
+     * Métode que es crida quan es fa visible el panel de Pases
+     *
+     * @param evt
+     */
+    private void carregaPases(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_carregaPases
+        if (this.pases == null) { //NOMÉS CARREGA ELS PASES SI ESTA BUID
+            this.omplirPases();
+        }
+    }//GEN-LAST:event_carregaPases
+
+    private void mostrarDialogAfegirPase(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mostrarDialogAfegirPase
+
+        this.dialogPase.setSize(500, 300);
+        this.dialogPase.setVisible(true);
+        this.dialogPase.setLocationRelativeTo(null);
+    }//GEN-LAST:event_mostrarDialogAfegirPase
+
+    private void tancarDialogPases(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tancarDialogPases
+        this.dialogPase.dispose();
+    }//GEN-LAST:event_tancarDialogPases
+
+    private boolean validarPase() {
+        //TODO: validar que la sala estigui buida!
+        return true;
+    }
+    private void guardarPase(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_guardarPase
+        if (this.validarPase()) {
+            try {
+                Pase p = new Pase();
+                p.setDia(this.selectorCalendari.getDate());
+                SimpleDateFormat ft = new SimpleDateFormat("HH:mm:ss");
+                p.setPelicula(this.pelicules.get(this.llistaPelicules.getSelectedIndex()));
+
+                p.setHora(ft.parse(this.horaPase.getSelectedItem() + ":" + this.minutPase.getSelectedItem() + ":00"));
+                //p.setHora(ft.parse("23:00:00"));
+                p.setSala(this.sales.get(this.comboSales.getSelectedIndex()));
+                rbd.guardarPase(p);
+                //Reseteam els pases que hi havia en memòria perque torni a carregar el nou
+
+                this.omplirPases();
+
+                this.mostrarAlert("Pase guardat!");
+                this.dialogPase.dispose();
+
+
+            } catch (ParseException ex) {
+                Logger.getLogger(Inicial.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_guardarPase
+    private void minutPaseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_minutPaseActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_minutPaseActionPerformed
+
+    private void carregaDialogPase(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_carregaDialogPase
+        System.out.println("carregam les sales");
+        this.sales = new ArrayList<Sala>();
+        this.comboSales.removeAllItems();
+        for (Sala s : rbd.getSales()) {
+            this.sales.add(s);
+            this.comboSales.addItem(s.getNom());
+        }
+        // TODO add your handling code here:
+    }//GEN-LAST:event_carregaDialogPase
+
+    public void omplirPases() {
+        System.out.println("carregam els pases");
+        this.modelPases.setRowCount(0);
+        this.pases = rbd.getPases();
+
+        this.tablePases.repaint();
+        this.tablePases.validate();//TODO: aplicar el rowsorter
+        for (Pase p : this.pases) {
+            this.modelPases.addRow(new Object[]{
+                        p.getPelicula().getTitol(),
+                        p.getDia(),
+                        p.getHora(),
+                        p.getSala().getNom(),});
+        }
+
+        this.tablePases.setModel(this.modelPases);
+    }
+
     public void itemStateChanged(ItemEvent e) {
         for (Checkbox cb : this.checkboxGeneres) {
             if (cb.getState()) {
                 this.generesSeleccionats.add(cb.getLabel());
-                System.out.println("afegim el " + cb.getLabel());
             } else {
                 this.generesSeleccionats.remove(cb.getLabel());
-                System.out.println("borram el " + cb.getLabel());
             }
         }
     }
 
+    /**
+     * Valida tots els camps del formulari de creació / edició de pel·lícules i
+     * mostra els missatges d'error oportuns.
+     *
+     * @return
+     */
     public boolean validarCamps() {
 
         // VALIDA EL TÍTOL
@@ -476,7 +766,7 @@ public class Inicial extends javax.swing.JFrame implements ItemListener {
         } catch (NumberFormatException e) {
             this.mostrarAlert("Posa una duraciò vàlida!!");
             return false;
-        } 
+        }
         //VALIDA EL NOM DEL DIRECTOR
         if (this.fieldDirector.getText().equals("")) {
             this.mostrarAlert("Posa un director!");
@@ -490,7 +780,7 @@ public class Inicial extends javax.swing.JFrame implements ItemListener {
             this.mostrarAlert("Posa un any vàlid!!");
             return false;
         }
-       
+
         //VALIDA LA SINOPSIS
         if (this.fieldSinopsis.getText().equals("")) {
             this.mostrarAlert("Escriu de que va la peli!!");
@@ -512,13 +802,14 @@ public class Inicial extends javax.swing.JFrame implements ItemListener {
     }
 
     /**
-     * Guarda les dades del formulari dins un objecte Pelicula i ho manda a guardar.
-     * @param evt 
+     * Guarda les dades del formulari dins un objecte Pelicula i ho manda a
+     * guardar ó actualitzar, si està validat per
+     *
+     * @validarCamps()
+     * @param evt
      */
     public void guardarEdicio(java.awt.event.MouseEvent evt) {
         if (this.validarCamps()) {//SI ELS CAMPS SON VÀLIDS, ANEM PER FEINA
-
-
             this.pEditar.setAny(Integer.parseInt(this.fieldAny.getText()));
             this.pEditar.setClassificacio((String) this.fieldClassificacio.getSelectedItem());
             this.pEditar.setDirector(this.fieldDirector.getText());
@@ -528,18 +819,16 @@ public class Inicial extends javax.swing.JFrame implements ItemListener {
             //TODO: ASSIGNAR ELS GÈNERES
             this.pEditar.setGeneres(new HashSet(this.getGeneresSeleccionats()));
             //IMATGE
-            System.out.println(this.afegirPeli);
-            System.out.println(this.rutaArxiu.getText().equals(""));
-            System.out.println(this.rutaArxiu.getText());
-
             if (this.rutaArxiu.getText() != this.pEditar.getRutaImatge()) {
                 this.guardarImatgeFTP(this.rutaArxiu.getText());
                 this.pEditar.setRutaImatge(new File(this.rutaArxiu.getText()).getName());
             }
-            //TODO: SEGONS AIXÓ, GUARDA O ACTUALITZA
+
             if (!this.afegirPeli) {
+                // si estam en mode edició, actualitza
                 rbd.actualitzarPelicula(this.pEditar);
             } else {
+                // si estam en mode inserció, guarda
                 rbd.guardarPelicula(this.pEditar);
             }
             this.mostrarAlert("Pel·lìcula guardada correctament");
@@ -550,6 +839,12 @@ public class Inicial extends javax.swing.JFrame implements ItemListener {
 
     }
 
+    /**
+     * De tots els gèneres que s'han seleccionat per la pel·lícula els passa
+     * d'String a objectes gènere, ho passa
+     *
+     * @return
+     */
     public ArrayList<Genere> getGeneresSeleccionats() {
 
         ArrayList<Genere> generes = new ArrayList<Genere>();
@@ -581,7 +876,6 @@ public class Inicial extends javax.swing.JFrame implements ItemListener {
             boolean login = client.login(sUser, sPassword);
 
             if (login) {
-                System.out.println("ficam l'imatge dins l'ftp");
                 File f = new File(imatge);
 
                 fis = new FileInputStream(imatge);
@@ -590,7 +884,6 @@ public class Inicial extends javax.swing.JFrame implements ItemListener {
 
                 fis.close();
                 client.logout();
-                System.out.println("arxiu pujat");
             } else {
                 System.out.println("no s'ha conectat");
             }
@@ -647,16 +940,26 @@ public class Inicial extends javax.swing.JFrame implements ItemListener {
     private javax.swing.JButton botoCancelarEditarPeli;
     private javax.swing.JMenuItem botoEditarPeli;
     private javax.swing.JButton botoSeleccionarPortada;
+    private javax.swing.JComboBox comboSales;
     private javax.swing.JDialog dialogEditarPeli;
     private javax.swing.JDialog dialogGeneres;
+    private javax.swing.JDialog dialogPase;
     private javax.swing.JTextField fieldAny;
     private javax.swing.JComboBox fieldClassificacio;
     private javax.swing.JTextField fieldDirector;
     private javax.swing.JTextField fieldDuracio;
     private javax.swing.JTextArea fieldSinopsis;
     private javax.swing.JTextField fieldTitol;
+    private javax.swing.JComboBox horaPase;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -664,12 +967,20 @@ public class Inicial extends javax.swing.JFrame implements ItemListener {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
-    private javax.swing.JPanel jPanel2;
+    private javax.swing.JLabel jLabel9;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JComboBox llistaPelicules;
+    private javax.swing.JComboBox minutPase;
+    private javax.swing.JPanel panelPases;
+    private javax.swing.JPanel panelPelicules;
     private javax.swing.JPopupMenu popUpPelicules;
     private javax.swing.JLabel rutaArxiu;
+    private org.jdesktop.swingx.JXDatePicker selectorCalendari;
+    private javax.swing.JTable tablePases;
     private javax.swing.JTable tablePelicules;
     // End of variables declaration//GEN-END:variables
 }

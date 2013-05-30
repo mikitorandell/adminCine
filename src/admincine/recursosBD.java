@@ -5,8 +5,13 @@
 package admincine;
 
 import entitats.Genere;
+import entitats.Pase;
 import entitats.Pelicula;
+import entitats.Sala;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -39,18 +44,39 @@ public class recursosBD {
         session.getTransaction().commit(); //tanca la sessió perque fagi el commit. 
         session.beginTransaction();//reinicia sessió
     }
-    
-    public void guardarPelicula(Pelicula p)
-    {
+
+    public void guardarPelicula(Pelicula p) {
         session.save(p);
-          session.getTransaction().commit(); //tanca la sessió perque fagi el commit. 
+        session.getTransaction().commit(); //tanca la sessió perque fagi el commit. 
         session.beginTransaction();//reinicia sessió
     }
-    
-    
-    public ArrayList<Genere> getGeneres(){
+
+    public ArrayList<Genere> getGeneres() {
         return this.getSelect("from Genere");
     }
+
+    /**
+     * *************** *
+     * PANEL DE PASES * ****************
+     */
+    public ArrayList<Pase> getPases() {
+        Date date = (Date) Calendar.getInstance().getTime();
+        SimpleDateFormat dataAvui = new SimpleDateFormat("yyyy-MM-dd");
+        String avui = dataAvui.format(date);
+        String hql = "from Pase p where p.dia>='" + avui + "' order by dia, hora asc";
+        return this.getSelect(hql);
+    }
+
+    public ArrayList<Sala> getSales() {
+        return this.getSelect("from Sala");
+    }
+    
+    public void guardarPase(Pase p) {
+        session.save(p);
+        session.getTransaction().commit(); //tanca la sessió perque fagi el commit. 
+        session.beginTransaction();//reinicia sessió
+    }
+
     /**
      * Métode generic al que se l'hi passa la sentencia HQL i retorna un
      * ArrayList dels resultats
