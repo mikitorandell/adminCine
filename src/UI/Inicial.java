@@ -5,14 +5,13 @@
 package UI;
 
 import admincine.recursosBD;
+import admincine.FiltreArxius;
+import admincine.CustomModel;
 import entitats.Genere;
 import entitats.Pase;
 import entitats.Pelicula;
 import entitats.Sala;
 import java.awt.Checkbox;
-import java.awt.CheckboxGroup;
-import java.awt.Color;
-import java.awt.TextField;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
@@ -20,6 +19,9 @@ import java.io.FileInputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,66 +34,45 @@ import org.apache.commons.net.ftp.FTPClient;
  *
  * @author torandell9
  */
-public class Inicial extends javax.swing.JFrame implements ItemListener {
+public final class Inicial extends javax.swing.JFrame implements ItemListener {
 
     // TODO: posar l'opció de borrar pase, pero només si no hi ha cap reserva feta!
-    recursosBD rbd = new recursosBD();
-    Pelicula pEditar;
-    boolean afegirPeli = false;
+    private recursosBD rbd = new recursosBD();
+    private Pelicula pEditar;
+    private boolean afegirPeli = false;
     private ArrayList<Checkbox> checkboxGeneres;
     private ArrayList<String> generesSeleccionats = new ArrayList<String>();
-    javax.swing.filechooser.FileFilter filter = new javax.swing.filechooser.FileFilter() {
-        @Override
-        public boolean accept(File file) {
-            if (file.isDirectory()) {
-                return true;
-            } else {
-                return (file.getName().endsWith(".jpg") || file.getName().endsWith(".jpeg") || file.getName().endsWith(".JPG") || file.getName().endsWith(".JPEG"));
-
-            }
-        }
-
-        @Override
-        public String getDescription() {
-            return "Arxius d'imatge (.JPG i .JPEG)";
-        }
-    };
+    private FiltreArxius filter = new FiltreArxius();
     /**
      * *** PANEL PELICULES **
      */
     ArrayList<Pelicula> pelicules;
-    DefaultTableModel modelPelicules = new DefaultTableModel(new Object[][]{}, new String[]{"Titol", "Director", "duracio", "any"}) {
-        @Override
-        public boolean isCellEditable(int row, int column) {
-            return false;
-        }
-    };
+    //TableModel personalitzat per a les pel·lícules per a que les files no siguin editables
+    CustomModel modelPelicules = new CustomModel(new String[]{"Titol", "Director", "duracio", "any"});
     /**
      * PANEL PASES
      */
+    Date d;
     private ArrayList<Sala> sales;
     ArrayList<Pase> pases;
-    DefaultTableModel modelPases = new DefaultTableModel(new Object[][]{}, new String[]{"Pel·lícula", "Día", "Hora", "Sala"}) {
-        @Override
-        public boolean isCellEditable(int row, int column) {
-            return false;
-        }
-    };
+    //TableModel personalitzat per als pases per a que les files no siguin editables
+    CustomModel modelPases = new CustomModel(new String[]{"Pel·lícula", "Día", "Hora", "Sala"});
 
+    /**
+     * Constructor inicial
+     */
     public Inicial() {
         initComponents();
         this.omplirPelicules();
 
     }
-
-    private void mostrarAlert(String missatge) {
-        JOptionPane.showMessageDialog(null, missatge);
-    }
-
+    /**
+     * Ompleix el model de pel·lícules carregant-les de la base de dades.
+     */
     public void omplirPelicules() {
         this.modelPelicules.setRowCount(0);
         this.llistaPelicules.removeAllItems();//borra les pel·lícules que hi pugui haver dins el ComboBox
-
+        this.llistaPelicules.addItem(" --- Seleccionar --- ");
         this.pelicules = rbd.getPelicules();
         for (Pelicula p : this.pelicules) {
             this.llistaPelicules.addItem(p.getTitol());//S'AFEGEIX AL DESPLEGABLE DE SELECCIÓ DE PEL·LÍCULA PER QUAN CREEN PASES
@@ -102,7 +83,7 @@ public class Inicial extends javax.swing.JFrame implements ItemListener {
                         p.getAny(),});
         }
 
-        this.tablePelicules.setModel(this.modelPelicules);
+        this.tablePelicules.setModel(this.modelPelicules); //aplica el model ja plé a la taula
 
     }
 
@@ -565,12 +546,22 @@ public class Inicial extends javax.swing.JFrame implements ItemListener {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * Listener quan fan click al botó del menú 'Desplegar pel·lícula'
+     * TODO: demanar confirmació abans de borrar
+     * @param evt 
+     */
     private void botoBorrarPeliActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botoBorrarPeliActionPerformed
         rbd.borrarPelicula(this.pelicules.get(this.tablePelicules.getSelectedRow()));
         this.omplirPelicules();
         this.mostrarAlert("Pel·lícula borrada satisfactoriament");
     }//GEN-LAST:event_botoBorrarPeliActionPerformed
 
+    /**
+     * Listener de quan apreten el botó per editar la pel·lícula
+     * Basicament ompleix el formulari amb els valos per defecte de la pel·lícula
+     * @param evt 
+     */
     private void botoEditarPeli(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botoEditarPeli
         //OMPLIR ELS CAMPS
         this.afegirPeli = false;
@@ -588,22 +579,28 @@ public class Inicial extends javax.swing.JFrame implements ItemListener {
         this.dialogEditarPeli.setVisible(true);
         this.mostrarCheckBoxGeneres();
     }//GEN-LAST:event_botoEditarPeli
-
 //GEN-FIRST:event_guardarEdicio
- 
 //GEN-LAST:event_guardarEdicio
-
+    /**
+     * Listener quan apreten el botó de cancelar edició de la pel·lícula
+     * Basicament fa el dialog invisible.
+     * @param evt 
+     */
     private void cancelarEdicio(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cancelarEdicio
         this.dialogEditarPeli.dispose();
         this.dialogEditarPeli.setVisible(false);
     }//GEN-LAST:event_cancelarEdicio
 
     private void fieldAnyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fieldAnyActionPerformed
-        // TODO add your handling code here:
+        // TODO: borrarme
     }//GEN-LAST:event_fieldAnyActionPerformed
-
+    
+    /**
+     * Listener per el botó de seleccionar portada de la pel·lícula.
+     * mostra un JFileChooser amb el filtre personalitzat perque nomes accepti arxius JPEG ó JPG
+     * @param evt 
+     */
     private void botoSeleccionarPortadaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botoSeleccionarPortadaMouseClicked
-        System.out.println("mostrar el selector d'arxiu");
         this.SeleccionarArxiu.setFileFilter(this.filter);
         int resultat = this.SeleccionarArxiu.showOpenDialog(null);
         if (resultat == JFileChooser.APPROVE_OPTION) {
@@ -612,9 +609,12 @@ public class Inicial extends javax.swing.JFrame implements ItemListener {
         }
     }//GEN-LAST:event_botoSeleccionarPortadaMouseClicked
 
+    /**
+     * Listener per quan fan click al botó d'afegir pel·lícula.
+     * Posa els camps buids, per si a cas ja estaven plens d'abans, i mostra el JDialog.
+     * @param evt 
+     */
     private void botoAfegirPeliMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botoAfegirPeliMouseClicked
-        //TODO: el formulari surt ple si ja han editat una peli antes 
-
         this.afegirPeli = true;
         //BUIDAM ELS CAMPS
         this.fieldAny.setText("");
@@ -631,6 +631,9 @@ public class Inicial extends javax.swing.JFrame implements ItemListener {
         this.dialogEditarPeli.setLocationRelativeTo(null);
         this.dialogEditarPeli.setVisible(true);
     }//GEN-LAST:event_botoAfegirPeliMouseClicked
+    /**
+     * Per cada un dels gèneres possibles que hi ha dins la base de dades, genera un checkbox i el fica dins el jDialgog.
+     */
     private void mostrarCheckBoxGeneres() {
         this.checkboxGeneres = new ArrayList<Checkbox>();
         dialogGeneres.getContentPane().removeAll();
@@ -646,6 +649,10 @@ public class Inicial extends javax.swing.JFrame implements ItemListener {
         }
 
     }
+    /**
+     * Obri un pocup que contendrà els checkbox per cada un dels gèneres.
+     * @param evt 
+     */
     private void mostrarPopupGeneres(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mostrarPopupGeneres
 
         this.dialogGeneres.setVisible(true);
@@ -655,7 +662,6 @@ public class Inicial extends javax.swing.JFrame implements ItemListener {
 
     /**
      * Métode que es crida quan es fa visible el panel de Pases
-     *
      * @param evt
      */
     private void carregaPases(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_carregaPases
@@ -664,37 +670,84 @@ public class Inicial extends javax.swing.JFrame implements ItemListener {
         }
     }//GEN-LAST:event_carregaPases
 
+    /**
+     * Fa visible un jDialog per afegir un pase.
+     * @param evt 
+     */
     private void mostrarDialogAfegirPase(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mostrarDialogAfegirPase
-
         this.dialogPase.setSize(500, 300);
         this.dialogPase.setVisible(true);
         this.dialogPase.setLocationRelativeTo(null);
     }//GEN-LAST:event_mostrarDialogAfegirPase
-
+    /**
+     * Tanca el jDialog per crear pases
+     *
+     * @param evt
+     */
     private void tancarDialogPases(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tancarDialogPases
         this.dialogPase.dispose();
     }//GEN-LAST:event_tancarDialogPases
 
+    /**
+     * Fa les comprobacions perque el pase sigui correcte (que els camps no
+     * estiguin buids, i que la data del pase sigui MAJOR que avui)
+     *
+     * @return
+     */
     private boolean validarPase() {
-        //TODO: validar que la sala estigui buida!
+
+        try {
+            Date d;
+            d = this.selectorCalendari.getDate();
+
+            //VALIDA QUE LA DATA NO SIGUI PASADA
+            Calendar c = new GregorianCalendar();
+            c.set(Calendar.HOUR_OF_DAY, 0); //anything 0 - 23
+            c.set(Calendar.MINUTE, 0);
+            c.set(Calendar.SECOND, 0);
+            Date d1 = c.getTime();
+            if (this.selectorCalendari.getDate().before(d1)) {
+                this.mostrarAlert("Els pases s'han de posar al manco amb un día d'antelació.");
+                return false;
+            }
+
+            //VALIDA QUE HAGIN SELECCIONAT ALGUNA PELI
+            if (this.llistaPelicules.getSelectedIndex() < 1) {
+                this.mostrarAlert("Selecciona una pel·lícula!");
+                return false;
+            }
+            if (this.comboSales.getSelectedIndex() < 1) {
+                this.mostrarAlert("Selecciona alguna sala!");
+                return false;
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            this.mostrarAlert("Posa una data vàlida!");
+            return false;
+        }
         return true;
     }
+
+    /**
+     * Si el pase es vàlid, el guarda dins la base de dades.
+     *
+     * @param evt
+     */
     private void guardarPase(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_guardarPase
         if (this.validarPase()) {
             try {
                 Pase p = new Pase();
                 p.setDia(this.selectorCalendari.getDate());
                 SimpleDateFormat ft = new SimpleDateFormat("HH:mm:ss");
-                p.setPelicula(this.pelicules.get(this.llistaPelicules.getSelectedIndex()));
+                p.setPelicula(this.pelicules.get(this.llistaPelicules.getSelectedIndex() - 1));
 
                 p.setHora(ft.parse(this.horaPase.getSelectedItem() + ":" + this.minutPase.getSelectedItem() + ":00"));
                 //p.setHora(ft.parse("23:00:00"));
-                p.setSala(this.sales.get(this.comboSales.getSelectedIndex()));
+                p.setSala(this.sales.get(this.comboSales.getSelectedIndex() - 1));
                 rbd.guardarPase(p);
                 //Reseteam els pases que hi havia en memòria perque torni a carregar el nou
-
                 this.omplirPases();
-
                 this.mostrarAlert("Pase guardat!");
                 this.dialogPase.dispose();
 
@@ -705,27 +758,36 @@ public class Inicial extends javax.swing.JFrame implements ItemListener {
         }
     }//GEN-LAST:event_guardarPase
     private void minutPaseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_minutPaseActionPerformed
-        // TODO add your handling code here:
+        // TODO:borrarme
     }//GEN-LAST:event_minutPaseActionPerformed
 
+    /**
+     * Mostra el dialog per crear pases. Carrega les sales, etc..ñ
+     * @param evt
+     */
     private void carregaDialogPase(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_carregaDialogPase
-        System.out.println("carregam les sales");
         this.sales = new ArrayList<Sala>();
         this.comboSales.removeAllItems();
+
+        this.comboSales.addItem(" --- Selecciona una sala --- ");
+
         for (Sala s : rbd.getSales()) {
             this.sales.add(s);
             this.comboSales.addItem(s.getNom());
         }
-        // TODO add your handling code here:
     }//GEN-LAST:event_carregaDialogPase
 
-    public void omplirPases() {
+    /**
+     * Carrega el model de la taula de Pases amb tots el pases disponibles (a  partir d'avui)
+     * @modelPases amb els pases que extreu de la base de dades.
+     */
+    private void omplirPases() {
         System.out.println("carregam els pases");
-        this.modelPases.setRowCount(0);
-        this.pases = rbd.getPases();
-
+        this.modelPases.setRowCount(0); //reinicia el model
+        this.pases = rbd.getPases(); // carrega l'arraylist de pases
         this.tablePases.repaint();
         this.tablePases.validate();//TODO: aplicar el rowsorter
+
         for (Pase p : this.pases) {
             this.modelPases.addRow(new Object[]{
                         p.getPelicula().getTitol(),
@@ -734,9 +796,15 @@ public class Inicial extends javax.swing.JFrame implements ItemListener {
                         p.getSala().getNom(),});
         }
 
-        this.tablePases.setModel(this.modelPases);
+        this.tablePases.setModel(this.modelPases); //aplicam el model a la taula
     }
 
+    /**
+     * Escoltador dels checkbox per assignar gèneres. Fica dins un ArrayList els
+     * que estan activats, i borra els que no hi estan.
+     *
+     * @param e
+     */
     public void itemStateChanged(ItemEvent e) {
         for (Checkbox cb : this.checkboxGeneres) {
             if (cb.getState()) {
@@ -753,8 +821,7 @@ public class Inicial extends javax.swing.JFrame implements ItemListener {
      *
      * @return
      */
-    public boolean validarCamps() {
-
+    private boolean validarCamps() {
         // VALIDA EL TÍTOL
         if (this.fieldTitol.getText().equals("")) {
             this.mostrarAlert("Fica un títol");
@@ -890,6 +957,14 @@ public class Inicial extends javax.swing.JFrame implements ItemListener {
         } catch (Exception ioe) {
             ioe.printStackTrace();
         }
+    }
+
+    /**
+     * Mostra un jOptionPane amb el missatge passat per paràmetre
+     * @param missatge
+     */
+    private void mostrarAlert(String missatge) {
+        JOptionPane.showMessageDialog(null, missatge);
     }
 
     /**
