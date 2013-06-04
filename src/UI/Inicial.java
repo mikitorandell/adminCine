@@ -28,6 +28,8 @@ import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 import org.apache.commons.net.ftp.FTPClient;
 
 /**
@@ -37,6 +39,7 @@ import org.apache.commons.net.ftp.FTPClient;
 public final class Inicial extends javax.swing.JFrame implements ItemListener {
 
     // TODO: posar l'opció de borrar pase, pero només si no hi ha cap reserva feta!
+    // TODO: mostrar les entrades venudes per cada pase
     private recursosBD rbd = new recursosBD();
     private Pelicula pEditar;
     private boolean afegirPeli = false;
@@ -66,6 +69,7 @@ public final class Inicial extends javax.swing.JFrame implements ItemListener {
         this.omplirPelicules();
 
     }
+
     /**
      * Ompleix el model de pel·lícules carregant-les de la base de dades.
      */
@@ -135,6 +139,8 @@ public final class Inicial extends javax.swing.JFrame implements ItemListener {
         minutPase = new javax.swing.JComboBox();
         jLabel13 = new javax.swing.JLabel();
         comboSales = new javax.swing.JComboBox();
+        popUpPases = new javax.swing.JPopupMenu();
+        botoBorrarPase = new javax.swing.JMenuItem();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         panelPelicules = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -171,12 +177,6 @@ public final class Inicial extends javax.swing.JFrame implements ItemListener {
         jLabel4.setText("Any");
 
         jLabel5.setText("Sinopsis");
-
-        fieldAny.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                fieldAnyActionPerformed(evt);
-            }
-        });
 
         fieldSinopsis.setColumns(20);
         fieldSinopsis.setRows(5);
@@ -346,11 +346,6 @@ public final class Inicial extends javax.swing.JFrame implements ItemListener {
         jLabel12.setText(":");
 
         minutPase.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52", "53", "54", "55", "56", "57", "58", "59" }));
-        minutPase.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                minutPaseActionPerformed(evt);
-            }
-        });
 
         jLabel13.setText("Sala:");
 
@@ -418,6 +413,14 @@ public final class Inicial extends javax.swing.JFrame implements ItemListener {
                 .addContainerGap())
         );
 
+        botoBorrarPase.setText("Borrar Pase");
+        botoBorrarPase.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botoBorrarPase(evt);
+            }
+        });
+        popUpPases.add(botoBorrarPase);
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jTabbedPane1.setMinimumSize(new java.awt.Dimension(900, 21));
@@ -482,6 +485,7 @@ public final class Inicial extends javax.swing.JFrame implements ItemListener {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        tablePases.setComponentPopupMenu(popUpPases);
         jScrollPane3.setViewportView(tablePases);
 
         jButton2.setText("Afegir Pase");
@@ -547,9 +551,10 @@ public final class Inicial extends javax.swing.JFrame implements ItemListener {
     }// </editor-fold>//GEN-END:initComponents
 
     /**
-     * Listener quan fan click al botó del menú 'Desplegar pel·lícula'
-     * TODO: demanar confirmació abans de borrar
-     * @param evt 
+     * Listener quan fan click al botó del menú 'Desplegar pel·lícula' TODO:
+     * demanar confirmació abans de borrar
+     *
+     * @param evt
      */
     private void botoBorrarPeliActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botoBorrarPeliActionPerformed
         rbd.borrarPelicula(this.pelicules.get(this.tablePelicules.getSelectedRow()));
@@ -558,9 +563,10 @@ public final class Inicial extends javax.swing.JFrame implements ItemListener {
     }//GEN-LAST:event_botoBorrarPeliActionPerformed
 
     /**
-     * Listener de quan apreten el botó per editar la pel·lícula
-     * Basicament ompleix el formulari amb els valos per defecte de la pel·lícula
-     * @param evt 
+     * Listener de quan apreten el botó per editar la pel·lícula Basicament
+     * ompleix el formulari amb els valos per defecte de la pel·lícula
+     *
+     * @param evt
      */
     private void botoEditarPeli(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botoEditarPeli
         //OMPLIR ELS CAMPS
@@ -584,21 +590,20 @@ public final class Inicial extends javax.swing.JFrame implements ItemListener {
     /**
      * Listener quan apreten el botó de cancelar edició de la pel·lícula
      * Basicament fa el dialog invisible.
-     * @param evt 
+     *
+     * @param evt
      */
     private void cancelarEdicio(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cancelarEdicio
         this.dialogEditarPeli.dispose();
         this.dialogEditarPeli.setVisible(false);
     }//GEN-LAST:event_cancelarEdicio
 
-    private void fieldAnyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fieldAnyActionPerformed
-        // TODO: borrarme
-    }//GEN-LAST:event_fieldAnyActionPerformed
-    
     /**
-     * Listener per el botó de seleccionar portada de la pel·lícula.
-     * mostra un JFileChooser amb el filtre personalitzat perque nomes accepti arxius JPEG ó JPG
-     * @param evt 
+     * Listener per el botó de seleccionar portada de la pel·lícula. mostra un
+     * JFileChooser amb el filtre personalitzat perque nomes accepti arxius JPEG
+     * ó JPG
+     *
+     * @param evt
      */
     private void botoSeleccionarPortadaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botoSeleccionarPortadaMouseClicked
         this.SeleccionarArxiu.setFileFilter(this.filter);
@@ -610,9 +615,10 @@ public final class Inicial extends javax.swing.JFrame implements ItemListener {
     }//GEN-LAST:event_botoSeleccionarPortadaMouseClicked
 
     /**
-     * Listener per quan fan click al botó d'afegir pel·lícula.
-     * Posa els camps buids, per si a cas ja estaven plens d'abans, i mostra el JDialog.
-     * @param evt 
+     * Listener per quan fan click al botó d'afegir pel·lícula. Posa els camps
+     * buids, per si a cas ja estaven plens d'abans, i mostra el JDialog.
+     *
+     * @param evt
      */
     private void botoAfegirPeliMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botoAfegirPeliMouseClicked
         this.afegirPeli = true;
@@ -632,7 +638,8 @@ public final class Inicial extends javax.swing.JFrame implements ItemListener {
         this.dialogEditarPeli.setVisible(true);
     }//GEN-LAST:event_botoAfegirPeliMouseClicked
     /**
-     * Per cada un dels gèneres possibles que hi ha dins la base de dades, genera un checkbox i el fica dins el jDialgog.
+     * Per cada un dels gèneres possibles que hi ha dins la base de dades,
+     * genera un checkbox i el fica dins el jDialgog.
      */
     private void mostrarCheckBoxGeneres() {
         this.checkboxGeneres = new ArrayList<Checkbox>();
@@ -649,9 +656,11 @@ public final class Inicial extends javax.swing.JFrame implements ItemListener {
         }
 
     }
+
     /**
      * Obri un pocup que contendrà els checkbox per cada un dels gèneres.
-     * @param evt 
+     *
+     * @param evt
      */
     private void mostrarPopupGeneres(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mostrarPopupGeneres
 
@@ -662,6 +671,7 @@ public final class Inicial extends javax.swing.JFrame implements ItemListener {
 
     /**
      * Métode que es crida quan es fa visible el panel de Pases
+     *
      * @param evt
      */
     private void carregaPases(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_carregaPases
@@ -672,7 +682,8 @@ public final class Inicial extends javax.swing.JFrame implements ItemListener {
 
     /**
      * Fa visible un jDialog per afegir un pase.
-     * @param evt 
+     *
+     * @param evt
      */
     private void mostrarDialogAfegirPase(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mostrarDialogAfegirPase
         this.dialogPase.setSize(500, 300);
@@ -699,7 +710,6 @@ public final class Inicial extends javax.swing.JFrame implements ItemListener {
         try {
             Date d;
             d = this.selectorCalendari.getDate();
-
             //VALIDA QUE LA DATA NO SIGUI PASADA
             Calendar c = new GregorianCalendar();
             c.set(Calendar.HOUR_OF_DAY, 0); //anything 0 - 23
@@ -757,12 +767,10 @@ public final class Inicial extends javax.swing.JFrame implements ItemListener {
             }
         }
     }//GEN-LAST:event_guardarPase
-    private void minutPaseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_minutPaseActionPerformed
-        // TODO:borrarme
-    }//GEN-LAST:event_minutPaseActionPerformed
 
     /**
      * Mostra el dialog per crear pases. Carrega les sales, etc..ñ
+     *
      * @param evt
      */
     private void carregaDialogPase(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_carregaDialogPase
@@ -778,7 +786,27 @@ public final class Inicial extends javax.swing.JFrame implements ItemListener {
     }//GEN-LAST:event_carregaDialogPase
 
     /**
-     * Carrega el model de la taula de Pases amb tots el pases disponibles (a  partir d'avui)
+     * Borra el pase seleccionat de la taula de Pases, en el cas de que no hi
+     * hagi entrades venudes per aquest pase. sino dona un alert d'error.
+     *
+     * @param evt
+     */
+    private void botoBorrarPase(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botoBorrarPase
+        int PaseSeleccionat = this.tablePases.getSelectedRow();
+        Pase p = this.pases.get(PaseSeleccionat);
+        if (p.getEntradas().size() > 0) {
+            this.mostrarAlert("No se pot borrar el pase! Ja hi ha entrades venudes...");
+        } else {
+            rbd.borrarPase(p);
+            this.mostrarAlert("Pase borrat!");
+            this.omplirPases();
+        }
+    }//GEN-LAST:event_botoBorrarPase
+
+    /**
+     * Carrega el model de la taula de Pases amb tots el pases disponibles (a
+     * partir d'avui)
+     *
      * @modelPases amb els pases que extreu de la base de dades.
      */
     private void omplirPases() {
@@ -786,7 +814,7 @@ public final class Inicial extends javax.swing.JFrame implements ItemListener {
         this.modelPases.setRowCount(0); //reinicia el model
         this.pases = rbd.getPases(); // carrega l'arraylist de pases
         this.tablePases.repaint();
-        this.tablePases.validate();//TODO: aplicar el rowsorter
+        this.tablePases.validate();
 
         for (Pase p : this.pases) {
             this.modelPases.addRow(new Object[]{
@@ -796,7 +824,11 @@ public final class Inicial extends javax.swing.JFrame implements ItemListener {
                         p.getSala().getNom(),});
         }
 
+
         this.tablePases.setModel(this.modelPases); //aplicam el model a la taula
+        TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(this.modelPases);
+
+        this.tablePases.setRowSorter(sorter);
     }
 
     /**
@@ -961,6 +993,7 @@ public final class Inicial extends javax.swing.JFrame implements ItemListener {
 
     /**
      * Mostra un jOptionPane amb el missatge passat per paràmetre
+     *
      * @param missatge
      */
     private void mostrarAlert(String missatge) {
@@ -1011,6 +1044,7 @@ public final class Inicial extends javax.swing.JFrame implements ItemListener {
     private javax.swing.JFileChooser SeleccionarArxiu;
     private javax.swing.JButton botoAceptarEditarPeli;
     private javax.swing.JButton botoAfegirPeli;
+    private javax.swing.JMenuItem botoBorrarPase;
     private javax.swing.JMenuItem botoBorrarPeli;
     private javax.swing.JButton botoCancelarEditarPeli;
     private javax.swing.JMenuItem botoEditarPeli;
@@ -1052,6 +1086,7 @@ public final class Inicial extends javax.swing.JFrame implements ItemListener {
     private javax.swing.JComboBox minutPase;
     private javax.swing.JPanel panelPases;
     private javax.swing.JPanel panelPelicules;
+    private javax.swing.JPopupMenu popUpPases;
     private javax.swing.JPopupMenu popUpPelicules;
     private javax.swing.JLabel rutaArxiu;
     private org.jdesktop.swingx.JXDatePicker selectorCalendari;

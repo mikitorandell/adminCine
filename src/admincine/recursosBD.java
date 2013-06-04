@@ -70,9 +70,15 @@ public class recursosBD {
     public ArrayList<Sala> getSales() {
         return this.getSelect("from Sala");
     }
-    
+
     public void guardarPase(Pase p) {
         session.save(p);
+        session.getTransaction().commit(); //tanca la sessió perque fagi el commit. 
+        session.beginTransaction();//reinicia sessió
+    }
+
+    public void borrarPase(Pase p) {
+        session.delete(p);
         session.getTransaction().commit(); //tanca la sessió perque fagi el commit. 
         session.beginTransaction();//reinicia sessió
     }
