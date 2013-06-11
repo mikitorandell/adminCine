@@ -7,6 +7,7 @@ package UI;
 import admincine.recursosBD;
 import admincine.FiltreArxius;
 import admincine.CustomModel;
+import admincine.NewHibernateUtil;
 import entitats.Genere;
 import entitats.Pase;
 import entitats.Pelicula;
@@ -71,6 +72,9 @@ public final class Inicial extends javax.swing.JFrame implements ItemListener {
      */
     public Inicial() {
         initComponents();
+        NewHibernateUtil hutil = new NewHibernateUtil();
+
+        System.out.println("les imatges estan a la ruta:"+hutil.cfg.getProperty("urlImg"));
         this.omplirPelicules();
 
     }
@@ -820,24 +824,24 @@ public final class Inicial extends javax.swing.JFrame implements ItemListener {
     }//GEN-LAST:event_botoBorrarPase
 
     private void mostrarStats(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_mostrarStats
-       /* try {
-           //TODO: Posar el jasperreports
-            ConexionMySQL con = new ConexionMySQL();
+        /* try {
+         //TODO: Posar el jasperreports
+         ConexionMySQL con = new ConexionMySQL();
 
-            Connection link = con.conectar();
-            JasperReport reporte;
+         Connection link = con.conectar();
+         JasperReport reporte;
 
-            reporte = JasperCompileManager.compileReport("src/reports/report_grafiques.jrxml");
+         reporte = JasperCompileManager.compileReport("src/reports/report_grafiques.jrxml");
 
-            JasperPrint print = JasperFillManager.fillReport(reporte, null, link);
+         JasperPrint print = JasperFillManager.fillReport(reporte, null, link);
 
-            JasperViewer.viewReport(print, false);
+         JasperViewer.viewReport(print, false);
 
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            System.out.println("error llegint l'informe report_grafiques");
-        }
-        * */
+         } catch (Exception ex) {
+         ex.printStackTrace();
+         System.out.println("error llegint l'informe report_grafiques");
+         }
+         * */
     }//GEN-LAST:event_mostrarStats
 
     /**
@@ -952,7 +956,7 @@ public final class Inicial extends javax.swing.JFrame implements ItemListener {
             this.pEditar.setDuracio(Integer.parseInt(this.fieldDuracio.getText()));
             this.pEditar.setSinopsis(this.fieldSinopsis.getText());
             this.pEditar.setTitol(this.fieldTitol.getText());
-            
+
             this.pEditar.setGeneres(new HashSet(this.getGeneresSeleccionats()));
             //IMATGE
             if (this.rutaArxiu.getText() != this.pEditar.getRutaImatge()) {
@@ -996,6 +1000,7 @@ public final class Inicial extends javax.swing.JFrame implements ItemListener {
 
     /**
      * Guarda l'imatge dins l'FTP
+     *
      * @param imatge
      */
     public void guardarImatgeFTP(String imatge) {
