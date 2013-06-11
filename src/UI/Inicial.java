@@ -16,6 +16,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
 import java.io.FileInputStream;
+import java.sql.Connection;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -30,6 +31,11 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.view.JasperViewer;
 import org.apache.commons.net.ftp.FTPClient;
 
 /**
@@ -38,7 +44,6 @@ import org.apache.commons.net.ftp.FTPClient;
  */
 public final class Inicial extends javax.swing.JFrame implements ItemListener {
 
-    // TODO: posar l'opció de borrar pase, pero només si no hi ha cap reserva feta!
     // TODO: mostrar les entrades venudes per cada pase
     private recursosBD rbd = new recursosBD();
     private Pelicula pEditar;
@@ -150,7 +155,7 @@ public final class Inicial extends javax.swing.JFrame implements ItemListener {
         jScrollPane3 = new javax.swing.JScrollPane();
         tablePases = new javax.swing.JTable();
         jButton2 = new javax.swing.JButton();
-        jPanel1 = new javax.swing.JPanel();
+        panelStats = new javax.swing.JPanel();
 
         botoEditarPeli.setText("Editar pel·lícula");
         botoEditarPeli.addActionListener(new java.awt.event.ActionListener() {
@@ -424,6 +429,11 @@ public final class Inicial extends javax.swing.JFrame implements ItemListener {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jTabbedPane1.setMinimumSize(new java.awt.Dimension(900, 21));
+        jTabbedPane1.addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentShown(java.awt.event.ComponentEvent evt) {
+                mostrarStats(evt);
+            }
+        });
 
         tablePelicules.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -517,18 +527,24 @@ public final class Inicial extends javax.swing.JFrame implements ItemListener {
 
         jTabbedPane1.addTab("Pases", panelPases);
 
-        org.jdesktop.layout.GroupLayout jPanel1Layout = new org.jdesktop.layout.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+        panelStats.addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentShown(java.awt.event.ComponentEvent evt) {
+                mostrarStats(evt);
+            }
+        });
+
+        org.jdesktop.layout.GroupLayout panelStatsLayout = new org.jdesktop.layout.GroupLayout(panelStats);
+        panelStats.setLayout(panelStatsLayout);
+        panelStatsLayout.setHorizontalGroup(
+            panelStatsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(0, 998, Short.MAX_VALUE)
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+        panelStatsLayout.setVerticalGroup(
+            panelStatsLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(0, 451, Short.MAX_VALUE)
         );
 
-        jTabbedPane1.addTab("Estadístiques", jPanel1);
+        jTabbedPane1.addTab("Estadístiques", panelStats);
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -803,6 +819,27 @@ public final class Inicial extends javax.swing.JFrame implements ItemListener {
         }
     }//GEN-LAST:event_botoBorrarPase
 
+    private void mostrarStats(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_mostrarStats
+       /* try {
+           //TODO: Posar el jasperreports
+            ConexionMySQL con = new ConexionMySQL();
+
+            Connection link = con.conectar();
+            JasperReport reporte;
+
+            reporte = JasperCompileManager.compileReport("src/reports/report_grafiques.jrxml");
+
+            JasperPrint print = JasperFillManager.fillReport(reporte, null, link);
+
+            JasperViewer.viewReport(print, false);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.out.println("error llegint l'informe report_grafiques");
+        }
+        * */
+    }//GEN-LAST:event_mostrarStats
+
     /**
      * Carrega el model de la taula de Pases amb tots el pases disponibles (a
      * partir d'avui)
@@ -915,7 +952,7 @@ public final class Inicial extends javax.swing.JFrame implements ItemListener {
             this.pEditar.setDuracio(Integer.parseInt(this.fieldDuracio.getText()));
             this.pEditar.setSinopsis(this.fieldSinopsis.getText());
             this.pEditar.setTitol(this.fieldTitol.getText());
-            //TODO: ASSIGNAR ELS GÈNERES
+            
             this.pEditar.setGeneres(new HashSet(this.getGeneresSeleccionats()));
             //IMATGE
             if (this.rutaArxiu.getText() != this.pEditar.getRutaImatge()) {
@@ -959,7 +996,6 @@ public final class Inicial extends javax.swing.JFrame implements ItemListener {
 
     /**
      * Guarda l'imatge dins l'FTP
-     *
      * @param imatge
      */
     public void guardarImatgeFTP(String imatge) {
@@ -1077,7 +1113,6 @@ public final class Inicial extends javax.swing.JFrame implements ItemListener {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
@@ -1086,6 +1121,7 @@ public final class Inicial extends javax.swing.JFrame implements ItemListener {
     private javax.swing.JComboBox minutPase;
     private javax.swing.JPanel panelPases;
     private javax.swing.JPanel panelPelicules;
+    private javax.swing.JPanel panelStats;
     private javax.swing.JPopupMenu popUpPases;
     private javax.swing.JPopupMenu popUpPelicules;
     private javax.swing.JLabel rutaArxiu;
