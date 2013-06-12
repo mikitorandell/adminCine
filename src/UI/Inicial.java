@@ -8,6 +8,7 @@ import admincine.recursosBD;
 import admincine.FiltreArxius;
 import admincine.CustomModel;
 import admincine.NewHibernateUtil;
+import appcine.ConexionMySQL;
 import entitats.Genere;
 import entitats.Pase;
 import entitats.Pelicula;
@@ -36,6 +37,7 @@ import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.view.JRViewer;
 import net.sf.jasperreports.view.JasperViewer;
 import org.apache.commons.net.ftp.FTPClient;
 
@@ -74,7 +76,7 @@ public final class Inicial extends javax.swing.JFrame implements ItemListener {
         initComponents();
         NewHibernateUtil hutil = new NewHibernateUtil();
 
-        System.out.println("les imatges estan a la ruta:"+hutil.cfg.getProperty("urlImg"));
+        System.out.println("les imatges estan a la ruta:" + hutil.cfg.getProperty("urlImg"));
         this.omplirPelicules();
 
     }
@@ -135,6 +137,7 @@ public final class Inicial extends javax.swing.JFrame implements ItemListener {
         jLabel8 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
         dialogGeneres = new javax.swing.JDialog();
+        botoOkGenere = new javax.swing.JButton();
         dialogPase = new javax.swing.JDialog();
         jLabel9 = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
@@ -188,7 +191,9 @@ public final class Inicial extends javax.swing.JFrame implements ItemListener {
         jLabel5.setText("Sinopsis");
 
         fieldSinopsis.setColumns(20);
+        fieldSinopsis.setLineWrap(true);
         fieldSinopsis.setRows(5);
+        fieldSinopsis.setWrapStyleWord(true);
         jScrollPane2.setViewportView(fieldSinopsis);
 
         botoCancelarEditarPeli.setText("Cancelar");
@@ -321,6 +326,14 @@ public final class Inicial extends javax.swing.JFrame implements ItemListener {
         );
 
         dialogGeneres.getContentPane().setLayout(new java.awt.FlowLayout());
+
+        botoOkGenere.setText("OK");
+        botoOkGenere.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tancarDialogGeneres(evt);
+            }
+        });
+        dialogGeneres.getContentPane().add(botoOkGenere);
 
         dialogPase.addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowOpened(java.awt.event.WindowEvent evt) {
@@ -674,7 +687,7 @@ public final class Inicial extends javax.swing.JFrame implements ItemListener {
             }
             cb.addItemListener(this);
         }
-
+        dialogGeneres.getContentPane().add(this.botoOkGenere);
     }
 
     /**
@@ -824,25 +837,39 @@ public final class Inicial extends javax.swing.JFrame implements ItemListener {
     }//GEN-LAST:event_botoBorrarPase
 
     private void mostrarStats(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_mostrarStats
-        /* try {
-         //TODO: Posar el jasperreports
-         ConexionMySQL con = new ConexionMySQL();
+        //TODO: Posar el jasperreports
+        try {
+            this.panelStats.removeAll();
+            ConexionMySQL con = new ConexionMySQL();
 
-         Connection link = con.conectar();
-         JasperReport reporte;
+            Connection link = con.conectar();
+            JasperReport reporte;
 
-         reporte = JasperCompileManager.compileReport("src/reports/report_grafiques.jrxml");
+            reporte = JasperCompileManager.compileReport("src/reports/report_grafiques.jrxml");
 
-         JasperPrint print = JasperFillManager.fillReport(reporte, null, link);
+            JasperPrint print = JasperFillManager.fillReport(reporte, null, link);
+            JRViewer jrv = new JRViewer(print);
+            this.panelStats.add(jrv);
+            jrv.setBounds(this.panelStats.getBounds());
+            this.panelStats.repaint();
+            this.panelStats.revalidate();
+          //  JasperViewer.viewReport(print, false);
 
-         JasperViewer.viewReport(print, false);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.out.println("error llegint l'informe report_grafiques");
+        }
 
-         } catch (Exception ex) {
-         ex.printStackTrace();
-         System.out.println("error llegint l'informe report_grafiques");
-         }
-         * */
     }//GEN-LAST:event_mostrarStats
+
+    /**
+     * Tanca el dialog de géneres
+     *
+     * @param evt
+     */
+    private void tancarDialogGeneres(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tancarDialogGeneres
+        this.dialogGeneres.dispose();        // TODO add your handling code here:
+    }//GEN-LAST:event_tancarDialogGeneres
 
     /**
      * Carrega el model de la taula de Pases amb tots el pases disponibles (a
@@ -933,11 +960,13 @@ public final class Inicial extends javax.swing.JFrame implements ItemListener {
         }
 
         //VALIDA ELS GÈNERES
-        if (this.generesSeleccionats.size() == 0) {
-            this.mostrarAlert("posa algún gènere!!");
-            return false;
-        }
-
+        //TODO: arreglar, no funciona
+        /**
+         * System.out.println(this.generesSeleccionats.size()); if
+         * (this.generesSeleccionats.size() == 0 &&
+         * this.pEditar.getGeneres().size()==0 ) { this.mostrarAlert("posa algún
+         * gènere!!"); return false; } *
+         */
         return true;
     }
 
@@ -969,7 +998,9 @@ public final class Inicial extends javax.swing.JFrame implements ItemListener {
                 rbd.actualitzarPelicula(this.pEditar);
             } else {
                 // si estam en mode inserció, guarda
+                this.pEditar.setTresd(false); //TODO: posar el 3d per opcions
                 rbd.guardarPelicula(this.pEditar);
+
             }
             this.mostrarAlert("Pel·lìcula guardada correctament");
             this.dialogEditarPeli.dispose();
@@ -1007,9 +1038,14 @@ public final class Inicial extends javax.swing.JFrame implements ItemListener {
 
         FTPClient client = new FTPClient();
         //TODO: fer que ho fiqui al ftp que toca
-        String sFTP = "port-au-prince.dreamhost.com";
-        String sUser = "cartasmodelos";
-        String sPassword = "motherfucker";
+        /**
+         * String sFTP = "port-au-prince.dreamhost.com"; String sUser =
+         * "cartasmodelos"; String sPassword = "motherfucker"; *
+         */
+        String sFTP = "62.43.75.57";
+        String sUser = "miki";
+        String sPassword = "mikimiki";
+        String url = "appCine/portades/";
         FileInputStream fis;
         try {
             client.connect(sFTP);
@@ -1020,7 +1056,7 @@ public final class Inicial extends javax.swing.JFrame implements ItemListener {
 
                 fis = new FileInputStream(imatge);
                 //TODO: fer que ho fiqui a la carpeta que toca
-                client.storeFile(f.getName(), fis);
+                client.storeFile(url + f.getName(), fis);
 
                 fis.close();
                 client.logout();
@@ -1089,6 +1125,7 @@ public final class Inicial extends javax.swing.JFrame implements ItemListener {
     private javax.swing.JMenuItem botoBorrarPeli;
     private javax.swing.JButton botoCancelarEditarPeli;
     private javax.swing.JMenuItem botoEditarPeli;
+    private javax.swing.JButton botoOkGenere;
     private javax.swing.JButton botoSeleccionarPortada;
     private javax.swing.JComboBox comboSales;
     private javax.swing.JDialog dialogEditarPeli;

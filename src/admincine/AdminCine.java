@@ -5,8 +5,6 @@
 package admincine;
 
 import UI.Inicial;
-import java.io.FileInputStream;
-import org.apache.commons.net.ftp.FTPClient;
 
 /**
  *
