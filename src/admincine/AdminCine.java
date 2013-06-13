@@ -7,7 +7,7 @@ package admincine;
 import UI.Inicial;
 
 /**
- *
+ * Clase main del projecte.
  * @author torandell9
  */
 public class AdminCine {

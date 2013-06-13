@@ -1,14 +1,10 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package UI;
 
 import admincine.recursosBD;
 import admincine.FiltreArxius;
 import admincine.CustomModel;
 import admincine.NewHibernateUtil;
-import appcine.ConexionMySQL;
+import admincine.ConexionMySQL;
 import entitats.Genere;
 import entitats.Pase;
 import entitats.Pelicula;
@@ -42,32 +38,31 @@ import net.sf.jasperreports.view.JasperViewer;
 import org.apache.commons.net.ftp.FTPClient;
 
 /**
- *
+ * Clase que controla tots els Panels de l'Admin
  * @author torandell9
  */
 public final class Inicial extends javax.swing.JFrame implements ItemListener {
 
-    // TODO: mostrar les entrades venudes per cada pase
     private recursosBD rbd = new recursosBD();
     private Pelicula pEditar;
     private boolean afegirPeli = false;
     private ArrayList<Checkbox> checkboxGeneres;
     private ArrayList<String> generesSeleccionats = new ArrayList<String>();
     private FiltreArxius filter = new FiltreArxius();
-    /**
-     * *** PANEL PELICULES **
+    /*
+     * PANEL PELICULES
      */
-    ArrayList<Pelicula> pelicules;
+    private ArrayList<Pelicula> pelicules;
     //TableModel personalitzat per a les pel·lícules per a que les files no siguin editables
-    CustomModel modelPelicules = new CustomModel(new String[]{"Titol", "Director", "duracio", "any"});
-    /**
+    private CustomModel modelPelicules = new CustomModel(new String[]{"Titol", "Director", "duracio", "any"});
+    /*
      * PANEL PASES
      */
-    Date d;
+    private Date d;
     private ArrayList<Sala> sales;
-    ArrayList<Pase> pases;
+    private ArrayList<Pase> pases;
     //TableModel personalitzat per als pases per a que les files no siguin editables
-    CustomModel modelPases = new CustomModel(new String[]{"Pel·lícula", "Día", "Hora", "Sala"});
+    private CustomModel modelPases = new CustomModel(new String[]{"Pel·lícula", "Día", "Hora", "Sala"});
 
     /**
      * Constructor inicial
@@ -598,7 +593,6 @@ public final class Inicial extends javax.swing.JFrame implements ItemListener {
     /**
      * Listener de quan apreten el botó per editar la pel·lícula Basicament
      * ompleix el formulari amb els valos per defecte de la pel·lícula
-     *
      * @param evt
      */
     private void botoEditarPeli(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botoEditarPeli
@@ -853,7 +847,7 @@ public final class Inicial extends javax.swing.JFrame implements ItemListener {
             jrv.setBounds(this.panelStats.getBounds());
             this.panelStats.repaint();
             this.panelStats.revalidate();
-          //  JasperViewer.viewReport(print, false);
+            //  JasperViewer.viewReport(print, false);
 
         } catch (Exception ex) {
             ex.printStackTrace();
